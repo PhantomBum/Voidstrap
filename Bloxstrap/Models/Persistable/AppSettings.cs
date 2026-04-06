@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.IO;
 using Voidstrap.Enums;
 
@@ -152,5 +152,16 @@ namespace Voidstrap.Models.Persistable
             public int Height { get; set; }
             public int RefreshRate { get; set; }
         }
+
+        /// <summary>Lua auto-execute script feature (autoexecute.lua).</summary>
+        public bool EnableLuaScripting { get; set; } = false;
+
+        /// <summary>SwiftTunnel VPN integration.</summary>
+        public bool SwiftTunnelEnabled { get; set; } = false;
+
+        public string SwiftTunnelRegion { get; set; } = "";
+        public bool SwiftTunnelAutoConnect { get; set; } = false;
+        public bool SwiftTunnelSplitTunnel { get; set; } = false;
+        public bool SwiftTunnelRememberLogin { get; set; } = false;
     }
 }

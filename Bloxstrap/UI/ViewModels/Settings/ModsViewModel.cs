@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using NAudio.Gui;
@@ -502,17 +502,39 @@ namespace Voidstrap.UI.ViewModels.Settings
 
         public void AddCustomDeathSound()
         {
-            AddCustomFile(
-                new[] { "oof.ogg" },
-                Path.Combine(Paths.Mods, "Content", "sounds"),
-                "Select a Custom Death Sound",
-                "OGG Audio (*.ogg)|*.ogg",
-                "death sound",
-                () =>
-                {
-                    OnPropertyChanged(nameof(ChooseCustomDeathSoundVisibility));
-                    OnPropertyChanged(nameof(DeleteCustomDeathSoundVisibility));
-                });
+            const string filter =
+                "All supported audio|*.ogg;*.oga;*.wav;*.wave;*.mp3;*.flac;*.m4a;*.aac;*.wma;*.aiff;*.aif;*.opus|" +
+                "OGG (*.ogg;*.oga)|*.ogg;*.oga|" +
+                "WAV (*.wav;*.wave)|*.wav;*.wave|" +
+                "MP3 (*.mp3)|*.mp3|" +
+                "FLAC (*.flac)|*.flac|" +
+                "M4A / AAC (*.m4a;*.aac)|*.m4a;*.aac|" +
+                "WMA (*.wma)|*.wma|" +
+                "AIFF (*.aiff;*.aif)|*.aiff;*.aif|" +
+                "Opus (*.opus)|*.opus|" +
+                "All files (*.*)|*.*";
+
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = filter,
+                Title = "Select a Custom Death Sound"
+            };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            string targetDir = Path.Combine(Paths.Mods, "Content", "sounds");
+            string destPath = Path.Combine(targetDir, "oof.ogg");
+            Directory.CreateDirectory(targetDir);
+
+            if (!DeathSoundOggEncoder.TryImportAsOofOgg(dialog.FileName, destPath, out var error))
+            {
+                Frontend.ShowMessageBox(error ?? "Could not import the death sound.", MessageBoxImage.Error);
+                return;
+            }
+
+            OnPropertyChanged(nameof(ChooseCustomDeathSoundVisibility));
+            OnPropertyChanged(nameof(DeleteCustomDeathSoundVisibility));
         }
 
         public void RemoveCustomDeathSound()

@@ -1,4 +1,4 @@
-﻿<ui:UiPage
+<ui:UiPage
     x:Class="Voidstrap.UI.Elements.Settings.Pages.ModsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -420,7 +420,9 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                     </controls:OptionControl>
 
                     <!--  Custom Death Sound Option  -->
-                    <controls:OptionControl Header="Custom Death Sound" Description="Replaces the death sound with your own audio.">
+                    <controls:OptionControl
+                        Header="Custom Death Sound"
+                        Description="Replaces the death (oof) sound. OGG files are installed as-is; WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, and Opus are converted automatically to OGG Vorbis (mono, 44.1 kHz, up to 2 minutes).">
                         <StackPanel>
                             <ui:Button
                     Command="{Binding AddCustomDeathSoundCommand}"

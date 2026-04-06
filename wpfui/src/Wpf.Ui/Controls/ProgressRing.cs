@@ -1,4 +1,4 @@
-﻿// This Source Code Form is subject to the terms of the MIT License.
+// This Source Code Form is subject to the terms of the MIT License.
 // If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
@@ -48,7 +48,7 @@ public class ProgressRing : RangeBase
     /// Property for <see cref="CoverRingStroke"/>.
     /// </summary>
     public static readonly DependencyProperty CoverRingStrokeProperty =
-        DependencyProperty.RegisterAttached(
+        DependencyProperty.Register(
             nameof(CoverRingStroke),
             typeof(Brush),
             typeof(ProgressRing),
@@ -100,7 +100,7 @@ public class ProgressRing : RangeBase
     public Brush CoverRingStroke
     {
         get => (Brush)GetValue(CoverRingStrokeProperty);
-        internal set => SetValue(CoverRingStrokeProperty, value);
+        set => SetValue(CoverRingStrokeProperty, value);
     }
 
     /// <summary>
