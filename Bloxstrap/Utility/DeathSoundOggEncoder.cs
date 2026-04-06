@@ -9,7 +9,7 @@ using OggVorbisEncoder;
 namespace Voidstrap.Utility
 {
     /// <summary>
-    /// Imports a user-selected audio file as Roblox's <c>content/sounds/oof.ogg</c> (Ogg Vorbis).
+    /// Imports a user-selected audio file as Ogg Vorbis under <c>content/sounds/</c> (Voidstrap writes <c>oof.ogg</c> and mirrors <c>ouch.ogg</c> for current clients).
     /// Non-OGG inputs are decoded with NAudio and re-encoded as Vorbis so the game always receives a compatible file.
     /// </summary>
     internal static class DeathSoundOggEncoder
@@ -18,7 +18,7 @@ namespace Voidstrap.Utility
         private const int WriteBufferSize = 512;
         private const int MaxSeconds = 120;
 
-        /// <summary>Returns true if the file can be copied to <c>oof.ogg</c> without transcoding.</summary>
+        /// <summary>Returns true if the file can be copied without transcoding (same container as deployed oof/ouch).</summary>
         internal static bool IsOggContainer(string path)
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();

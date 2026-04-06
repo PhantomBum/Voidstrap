@@ -1,8 +1,9 @@
-﻿<Application
+<Application
     x:Class="Voidstrap.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:Voidstrap.UI.Converters"
+    xmlns:uiRoot="clr-namespace:Voidstrap.UI"
     xmlns:local="clr-namespace:Voidstrap"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     DispatcherUnhandledException="GlobalExceptionHandler"
@@ -39,6 +40,7 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <uiRoot:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

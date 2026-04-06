@@ -429,7 +429,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     FontSize="12"
                                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                     TextWrapping="Wrap">
-                                    Replaces Roblox's death sound. OGG Vorbis is installed as-is; other formats (WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, Opus) are converted to Vorbis oof.ogg. Preview decodes OGG with NVorbis (not Windows Media), so it matches what the game loads.
+                                    Replaces Roblox's death sound (current clients use ouch.ogg; oof.ogg is kept for compatibility). OGG Vorbis is installed as-is; other formats are converted to Vorbis. Both files are written so dying or resetting plays your sound in-game.
                                 </TextBlock>
                             </StackPanel>
                         </ui:CardExpander.Header>
@@ -451,7 +451,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     Margin="0,0,8,8"
                                     Appearance="Danger"
                                     Command="{Binding RemoveCustomDeathSoundCommand}"
-                                    Content="Remove oof.ogg"
+                                    Content="Remove custom death sound"
                                     Icon="Delete16"
                                     Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
                                 <ui:Button

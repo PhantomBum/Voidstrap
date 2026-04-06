@@ -224,7 +224,15 @@ namespace Voidstrap.UI.ViewModels.Settings
 
         public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
 
-        public ModPresetTask OldDeathSoundTask { get; } = new("OldDeathSound", @"content\sounds\oof.ogg", "Sounds.OldDeath.ogg");
+        /// <summary>
+        /// Roblox loads the death sound from <c>ouch.ogg</c>; older clients used <c>oof.ogg</c>.
+        /// We deploy the same asset to both so custom / classic sounds play on death and reset everywhere.
+        /// </summary>
+        public ModPresetTask OldDeathSoundTask { get; } = new("OldDeathSound", new()
+        {
+            { @"content\sounds\oof.ogg", "Sounds.OldDeath.ogg" },
+            { @"content\sounds\ouch.ogg", "Sounds.OldDeath.ogg" }
+        });
 
         public ModPresetTask OldAvatarBackgroundTask { get; } = new("OldAvatarBackground", @"ExtraContent\places\Mobile.rbxl", "OldAvatarBackground.rbxl");
 
@@ -392,11 +400,11 @@ namespace Voidstrap.UI.ViewModels.Settings
 
         public Visibility ChooseCustomDeathSoundVisibility =>
             GetVisibility(Path.Combine(Paths.Mods, "Content", "sounds"),
-                          new[] { "oof.ogg" }, checkExist: false);
+                          new[] { "oof.ogg", "ouch.ogg" }, checkExist: false);
 
         public Visibility DeleteCustomDeathSoundVisibility =>
             GetVisibility(Path.Combine(Paths.Mods, "Content", "sounds"),
-                          new[] { "oof.ogg" }, checkExist: true);
+                          new[] { "oof.ogg", "ouch.ogg" }, checkExist: true);
 
         private void AddCustomFile(string[] targetFiles, string targetDir, string dialogTitle, string filter, string failureText, Action postAction = null!)
         {
@@ -602,8 +610,11 @@ namespace Voidstrap.UI.ViewModels.Settings
                 return;
             }
 
-            string oofPath = Path.Combine(Paths.Mods, "Content", "sounds", "oof.ogg");
-            if (!File.Exists(oofPath))
+            string soundsDir = Path.Combine(Paths.Mods, "Content", "sounds");
+            string oofPath = Path.Combine(soundsDir, "oof.ogg");
+            string ouchPath = Path.Combine(soundsDir, "ouch.ogg");
+            string pathToPreview = File.Exists(oofPath) ? oofPath : ouchPath;
+            if (!File.Exists(pathToPreview))
             {
                 Frontend.ShowMessageBox("Install a custom death sound first (Choose Sound…).", MessageBoxImage.Information);
                 return;
@@ -612,7 +623,7 @@ namespace Voidstrap.UI.ViewModels.Settings
             try
             {
                 StopDeathSoundPreviewInternal();
-                _deathSoundPreviewReader = CreateDeathSoundPreviewReader(oofPath);
+                _deathSoundPreviewReader = CreateDeathSoundPreviewReader(pathToPreview);
                 _deathSoundPreviewOut = new WaveOutEvent();
                 _deathSoundPreviewOut.Init(_deathSoundPreviewReader);
                 _deathSoundPreviewOut.PlaybackStopped += OnDeathSoundPreviewStopped;
@@ -626,7 +637,7 @@ namespace Voidstrap.UI.ViewModels.Settings
                 StopDeathSoundPreviewInternal();
                 Frontend.ShowMessageBox(
                     $"Could not preview the sound:\n{ex.Message}\n\n" +
-                    "Tip: oof.ogg should be Ogg Vorbis. Re-import your file or convert it to Vorbis OGG.",
+                    "Tip: death sound files should be Ogg Vorbis. Re-import your file or convert it to Vorbis OGG.",
                     MessageBoxImage.Error);
             }
         }
@@ -721,6 +732,18 @@ namespace Voidstrap.UI.ViewModels.Settings
                 return;
             }
 
+            try
+            {
+                string ouchDest = Path.Combine(targetDir, "ouch.ogg");
+                File.Copy(destPath, ouchDest, overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox(
+                    $"Saved oof.ogg but could not mirror to ouch.ogg (needed for current Roblox):\n{ex.Message}",
+                    MessageBoxImage.Warning);
+            }
+
             OnPropertyChanged(nameof(ChooseCustomDeathSoundVisibility));
             OnPropertyChanged(nameof(DeleteCustomDeathSoundVisibility));
         }
@@ -729,7 +752,7 @@ namespace Voidstrap.UI.ViewModels.Settings
         {
             StopDeathSoundPreviewIfAny();
             RemoveCustomFile(
-                new[] { "oof.ogg" },
+                new[] { "oof.ogg", "ouch.ogg" },
                 Path.Combine(Paths.Mods, "Content", "sounds"),
                 "No custom death sound found to remove.",
                 () =>

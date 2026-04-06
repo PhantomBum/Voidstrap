@@ -308,20 +308,73 @@
             <ui:NavigationFluent x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" Frame="{Binding ElementName=RootFrame}" SelectedPageIndex="0">
                 <ui:NavigationFluent.Items>
                     <ui:NavigationItem Content="Core" IsEnabled="False" Opacity="0.6" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Integrations_Title}" Icon="Add12" Tag="Add16" PageType="{x:Type pages:IntegrationsPage}" />
-                    <ui:NavigationItem Content="Deployment" Icon="PlaySettings20" Tag="Play20" PageType="{x:Type pages:BehaviourPage}" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" Icon="PaintBucket24" Tag="PaintBucket20" PageType="{x:Type pages:AppearancePage}" />
-                    <ui:NavigationItem Content="Browser" Icon="Server20" Tag="ServerPlay20" PageType="{x:Type pages:ServerBrowserPage}" />
+                    <ui:NavigationItem
+                        Content="{x:Static resources:Strings.Menu_Integrations_Title}"
+                        Icon="Add12"
+                        Tag="Add16"
+                        PageType="{x:Type pages:IntegrationsPage}"
+                        ToolTip="Discord RPC, mobile, and third-party integrations" />
+                    <ui:NavigationItem
+                        Content="Deployment"
+                        Icon="PlaySettings20"
+                        Tag="Play20"
+                        PageType="{x:Type pages:BehaviourPage}"
+                        ToolTip="Install path, channels, launch behavior, and cleanup" />
+                    <ui:NavigationItem
+                        Content="{x:Static resources:Strings.Menu_Appearance_Title}"
+                        Icon="PaintBucket24"
+                        Tag="PaintBucket20"
+                        PageType="{x:Type pages:AppearancePage}"
+                        ToolTip="Themes, bootstrapper look, and visual options" />
+                    <ui:NavigationItem
+                        Content="Browser"
+                        Icon="Server20"
+                        Tag="ServerPlay20"
+                        PageType="{x:Type pages:ServerBrowserPage}"
+                        ToolTip="In-app server browser and discovery" />
                     <ui:NavigationSeparator />
                     <ui:NavigationItem Content="Configuration" IsEnabled="False" Opacity="0.6" />
-                    <ui:NavigationItem Content="Suite 2.0" Icon="BoxMultiple24" Tag="Box24" PageType="{x:Type pages:SuitePage}" />
-                    <ui:NavigationItem Content="FastFlag Settings" Icon="Settings28" Tag="SettingsChat24" PageType="{x:Type pages:FastFlagsPage}" />
-                    <ui:NavigationItem x:Name="FastFlagEditorNavItem" Content="FastFlag Editor" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagEditorPage}" Visibility="{Binding IsFastFlagEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    <ui:NavigationItem Content="Global" Icon="GlobeLocation20" Tag="Globe20" PageType="{x:Type pages:GBSEditorPage}" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" Icon="WrenchScrewdriver20" Tag="Wrench24" PageType="{x:Type pages:ModsPage}" />
+                    <ui:NavigationItem
+                        Content="Suite 2.0"
+                        Icon="BoxMultiple24"
+                        Tag="Box24"
+                        PageType="{x:Type pages:SuitePage}"
+                        ToolTip="Backup &amp; restore your full profile (settings, state, flags, optional tabs &amp; Roblox state)" />
+                    <ui:NavigationItem
+                        Content="FastFlag Settings"
+                        Icon="Settings28"
+                        Tag="SettingsChat24"
+                        PageType="{x:Type pages:FastFlagsPage}"
+                        ToolTip="Presets, toggles, and JSON tools for ClientAppSettings" />
+                    <ui:NavigationItem
+                        x:Name="FastFlagEditorNavItem"
+                        Content="FastFlag Editor"
+                        Icon="Flag28"
+                        Tag="Flag20"
+                        PageType="{x:Type pages:FastFlagEditorPage}"
+                        ToolTip="Grid editor for individual FFlags"
+                        Visibility="{Binding IsFastFlagEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <ui:NavigationItem
+                        Content="Global"
+                        Icon="GlobeLocation20"
+                        Tag="Globe20"
+                        PageType="{x:Type pages:GBSEditorPage}"
+                        ToolTip="Global bootstrapper / shared settings editor" />
+                    <ui:NavigationItem
+                        Content="{x:Static resources:Strings.Menu_Mods_Title}"
+                        Icon="WrenchScrewdriver20"
+                        Tag="Wrench24"
+                        PageType="{x:Type pages:ModsPage}"
+                        ToolTip="Mods, fonts, death sound, and content folder tools" />
                     <ui:NavigationSeparator />
                     <ui:NavigationItem IsEnabled="False" Opacity="0.6" />
-                    <ui:NavigationItem Content="News" Icon="News16" Tag="News20" Margin="0,-40,0,20" PageType="{x:Type pages:NewsPage}" />
+                    <ui:NavigationItem
+                        Content="News"
+                        Icon="News16"
+                        Tag="News20"
+                        Margin="0,-40,0,20"
+                        PageType="{x:Type pages:NewsPage}"
+                        ToolTip="Voidstrap news and release notes" />
                 </ui:NavigationFluent.Items>
 
                 <ui:NavigationFluent.Footer>

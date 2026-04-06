@@ -2273,6 +2273,42 @@ namespace Voidstrap
             }
         }
 
+        /// <summary>
+        /// Current Roblox clients read the death sound from <c>content/sounds/ouch.ogg</c>; older mods only wrote <c>oof.ogg</c>.
+        /// Mirror whichever exists so file-based replacements apply on death / reset.
+        /// </summary>
+        private static void EnsureDeathSoundOofOuchMirroredInMods()
+        {
+            const string LOG_IDENT = "Bootstrapper::EnsureDeathSoundOofOuchMirroredInMods";
+            if (!Paths.Initialized)
+                return;
+
+            string dir = Path.Combine(Paths.Mods, "Content", "sounds");
+            if (!Directory.Exists(dir))
+                return;
+
+            string oof = Path.Combine(dir, "oof.ogg");
+            string ouch = Path.Combine(dir, "ouch.ogg");
+
+            try
+            {
+                if (File.Exists(oof) && !File.Exists(ouch))
+                {
+                    File.Copy(oof, ouch, overwrite: false);
+                    App.Logger.WriteLine(LOG_IDENT, "Created ouch.ogg from oof.ogg for current Roblox death sound path.");
+                }
+                else if (File.Exists(ouch) && !File.Exists(oof))
+                {
+                    File.Copy(ouch, oof, overwrite: false);
+                    App.Logger.WriteLine(LOG_IDENT, "Created oof.ogg from ouch.ogg for compatibility.");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Could not mirror death sound files: {ex.Message}");
+            }
+        }
+
         private async Task ApplyModifications()
         {
             const string LOG_IDENT = "Bootstrapper::ApplyModifications";
@@ -2284,6 +2320,7 @@ namespace Voidstrap
             List<string> modFolderFiles = new();
 
             Directory.CreateDirectory(Paths.Mods);
+            EnsureDeathSoundOofOuchMirroredInMods();
             App.Logger.WriteLine("Bootstrapper::ApplyModifications", "Applying SkyboxPatch...");
 
             string selectedSkybox = App.Settings.Prop.SkyboxName;

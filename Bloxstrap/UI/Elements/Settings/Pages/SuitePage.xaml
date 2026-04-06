@@ -2,15 +2,17 @@
     x:Class="Voidstrap.UI.Elements.Settings.Pages.SuitePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Voidstrap.UI.Elements.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settings="clr-namespace:Voidstrap.UI.ViewModels.Settings"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="SuitePage"
     d:DataContext="{d:DesignInstance Type=settings:SuiteViewModel}"
-    d:DesignHeight="900"
+    d:DesignHeight="1200"
     d:DesignWidth="800"
     Scrollable="True"
+    Loaded="SuitePage_OnLoaded"
     mc:Ignorable="d">
 
     <StackPanel Margin="0,0,14,20">
@@ -18,21 +20,83 @@
             Margin="0,0,0,4"
             FontSize="28"
             FontWeight="Bold"
-            Text="Voidstrap Suite 2.0" />
+            Text="Suite 2.0 · Hub" />
         <TextBlock
-            Margin="0,0,0,16"
+            Margin="0,0,0,8"
             FontSize="14"
             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
             TextWrapping="Wrap">
-            One place to back up or move your whole launcher profile: settings, UI state, and FastFlags (including the mods ClientAppSettings file).
+            Organized backup and restore for your whole Voidstrap profile: settings, window state, FastFlags, optional workspace tabs, and optional Roblox state snapshots.
         </TextBlock>
 
         <ui:InfoBar
             Margin="0,0,0,12"
             IsClosable="False"
             IsOpen="True"
-            Message="Import replaces data on disk immediately. Restart Voidstrap after importing so every screen reloads."
+            Message="Import replaces files on disk immediately. Restart Voidstrap afterward so the UI, tabs, and state reload cleanly."
             Severity="Informational" />
+
+        <!-- Overview -->
+        <TextBlock
+            Margin="0,8,0,8"
+            FontSize="16"
+            FontWeight="Medium"
+            Text="Live profile snapshot" />
+        <ui:Card Margin="0,0,0,12" Padding="16">
+            <StackPanel>
+                <TextBlock
+                    FontFamily="Consolas"
+                    FontSize="13"
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                    Text="{Binding ProfileStats}"
+                    TextWrapping="Wrap" />
+                <Button
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Left"
+                    Command="{Binding RefreshProfileStatsCommand}"
+                    Content="Refresh snapshot" />
+            </StackPanel>
+        </ui:Card>
+
+        <!-- Export options -->
+        <TextBlock
+            Margin="0,4,0,8"
+            FontSize="16"
+            FontWeight="Medium"
+            Text="Bundle contents" />
+        <controls:OptionControl
+            Margin="0,0,0,4"
+            Header="Include workspace tabs"
+            Description="Embeds TabsConfig.json so multi-tab layouts move with the backup.">
+            <ui:ToggleSwitch IsChecked="{Binding SuiteExportIncludeWorkspaceTabs, Mode=TwoWay}" />
+        </controls:OptionControl>
+        <controls:OptionControl
+            Margin="0,0,0,12"
+            Header="Include Roblox state"
+            Description="Embeds RobloxState.json (player/studio pointers and related fields).">
+            <ui:ToggleSwitch IsChecked="{Binding SuiteExportIncludeRobloxState, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <TextBlock
+            Margin="0,0,0,6"
+            FontSize="13"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Optional note (stored inside the next export only, not saved as a setting)" />
+        <ui:TextBox
+            Margin="0,0,0,12"
+            MinHeight="36"
+            AcceptsReturn="True"
+            MaxLines="3"
+            PlaceholderText="e.g. Before channel change, clean install backup…"
+            Text="{Binding ExportNoteDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+
+        <!-- Backup & restore -->
+        <TextBlock
+            Margin="0,8,0,8"
+            FontSize="16"
+            FontWeight="Medium"
+            Text="Backup and restore" />
 
         <ui:CardAction
             Margin="0,0,0,8"
@@ -44,13 +108,50 @@
                     Margin="0,4,0,0"
                     FontSize="12"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    Text="Save a single .voidstrap.json file you can store on a drive or share between PCs."
+                    Text="Save a single .voidstrap.json (format 2.1) with settings, state, flags, fingerprint, and optional snapshots."
                     TextWrapping="Wrap" />
             </StackPanel>
         </ui:CardAction>
 
         <ui:CardAction
-            Margin="0,0,0,16"
+            Margin="0,0,0,8"
+            Command="{Binding QuickExportToSavedBackupsCommand}"
+            Icon="Save24">
+            <StackPanel>
+                <TextBlock FontSize="16" FontWeight="SemiBold" Text="Quick export to SavedBackups" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Writes a timestamped file under your SavedBackups folder with the same options as above."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <ui:CardAction
+            Margin="0,0,0,8"
+            Command="{Binding ValidateBundleCommand}"
+            Icon="DocumentSearch24">
+            <StackPanel>
+                <TextBlock FontSize="16" FontWeight="SemiBold" Text="Validate bundle" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Read-only: metadata, flag count, optional snapshots, and SHA-256 fingerprint check."
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    Margin="0,6,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="{Binding LastPreviewSummary}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding LastPreviewSummary, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <ui:CardAction
+            Margin="0,0,0,12"
             Command="{Binding ImportSuiteBundleCommand}"
             Icon="ArrowImport24">
             <StackPanel>
@@ -59,23 +160,93 @@
                     Margin="0,4,0,0"
                     FontSize="12"
                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                    Text="Load a previously exported suite file. You will be asked to confirm before anything is overwritten."
+                    Text="Replaces current profile data. You will be asked to confirm before anything is overwritten."
                     TextWrapping="Wrap" />
             </StackPanel>
         </ui:CardAction>
 
+        <!-- Paths -->
         <TextBlock
             Margin="0,8,0,8"
-            FontSize="18"
-            FontWeight="SemiBold"
-            Text="What’s included in 2.0" />
-        <TextBlock
-            Margin="0,0,0,6"
-            FontSize="13"
-            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-            TextWrapping="Wrap">
-            • <Run FontWeight="SemiBold" Text="Suite hub" /> — full profile export/import (settings + state + FastFlags)&#x0a;
-            • <Run FontWeight="SemiBold" Text="Earlier 1.x features" /> — death sound tools, path shortcuts, FastFlags JSON export, logs folder — all still on their pages.
-        </TextBlock>
+            FontSize="16"
+            FontWeight="Medium"
+            Text="Paths and folders" />
+
+        <ui:CardAction
+            Margin="0,0,0,8"
+            Command="{Binding OpenDataFolderCommand}"
+            Icon="Folder24">
+            <StackPanel>
+                <TextBlock FontSize="15" FontWeight="SemiBold" Text="Open Voidstrap data folder" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Contains JSON settings, mods folder link, logs path, and TabsConfig when used."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <ui:CardAction
+            Margin="0,0,0,8"
+            Command="{Binding OpenSavedBackupsFolderCommand}"
+            Icon="FolderBriefcase24">
+            <StackPanel>
+                <TextBlock FontSize="15" FontWeight="SemiBold" Text="Open SavedBackups" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Quick exports and any bundles you store here."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <ui:CardAction
+            Margin="0,0,0,12"
+            Command="{Binding OpenLogsFolderCommand}"
+            Icon="DocumentText24">
+            <StackPanel>
+                <TextBlock FontSize="15" FontWeight="SemiBold" Text="Open Logs folder" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Troubleshooting and diagnostics output."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <ui:CardAction
+            Margin="0,0,0,16"
+            Command="{Binding CopyDataPathCommand}"
+            Icon="Clipboard16">
+            <StackPanel>
+                <TextBlock FontSize="15" FontWeight="SemiBold" Text="Copy data folder path" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                    Text="Copies the full path to the clipboard (e.g. for scripts or support tickets)."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ui:CardAction>
+
+        <Expander
+            Margin="0,4,0,0"
+            Header="What Suite 2.1 includes"
+            IsExpanded="True">
+            <StackPanel Margin="0,8,0,0">
+                <TextBlock
+                    FontSize="13"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    TextWrapping="Wrap">
+                    • <Run FontWeight="SemiBold" Text="Core" /> — AppSettings.json, State.json, ClientAppSettings (FastFlags) with embedded SHA-256 fingerprint.&#x0a;
+                    • <Run FontWeight="SemiBold" Text="Optional" /> — TabsConfig.json and RobloxState.json when toggles are on and data exists.&#x0a;
+                    • <Run FontWeight="SemiBold" Text="Metadata" /> — export time (UTC), app version, host user, optional note.&#x0a;
+                    • <Run FontWeight="SemiBold" Text="Compatibility" /> — imports any 2.0/2.1 bundle; older 2.0 files omit tabs, Roblox state, and fingerprint.
+                </TextBlock>
+            </StackPanel>
+        </Expander>
     </StackPanel>
 </ui:UiPage>

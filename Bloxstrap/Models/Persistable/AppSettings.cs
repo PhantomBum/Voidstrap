@@ -163,5 +163,14 @@ namespace Voidstrap.Models.Persistable
         public bool SwiftTunnelAutoConnect { get; set; } = false;
         public bool SwiftTunnelSplitTunnel { get; set; } = false;
         public bool SwiftTunnelRememberLogin { get; set; } = false;
+
+        /// <summary>Suite hub: include workspace tab layout (TabsConfig.json) in bundle exports.</summary>
+        public bool SuiteExportIncludeWorkspaceTabs { get; set; } = true;
+
+        /// <summary>Suite hub: include RobloxState.json in bundle exports.</summary>
+        public bool SuiteExportIncludeRobloxState { get; set; } = true;
+
+        /// <summary>Last folder used when saving a suite bundle (for dialog convenience).</summary>
+        public string SuiteLastExportFolder { get; set; } = "";
     }
 }
