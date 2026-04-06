@@ -3,6 +3,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using NAudio.Gui;
 using NAudio.Midi;
+using NAudio.Wave;
 using System;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
@@ -201,6 +202,18 @@ namespace Voidstrap.UI.ViewModels.Settings
         public ICommand RemoveCustomShiftlockModCommand => new RelayCommand(RemoveCustomShiftlockMod);
         public ICommand AddCustomDeathSoundCommand => new RelayCommand(AddCustomDeathSound);
         public ICommand RemoveCustomDeathSoundCommand => new RelayCommand(RemoveCustomDeathSound);
+        public ICommand ToggleDeathSoundPreviewCommand => new RelayCommand(ToggleDeathSoundPreview);
+        public ICommand OpenDeathSoundsFolderCommand => new RelayCommand(OpenDeathSoundsFolder);
+        public ICommand CopyModsFolderPathCommand => new RelayCommand(CopyModsFolderPath);
+
+        private WaveOutEvent? _deathSoundPreviewOut;
+        private AudioFileReader? _deathSoundPreviewReader;
+        private bool _isDeathSoundPreviewPlaying;
+
+        public bool IsDeathSoundPreviewPlaying => _isDeathSoundPreviewPlaying;
+
+        public string DeathSoundPreviewButtonLabel =>
+            _isDeathSoundPreviewPlaying ? "Stop preview" : "Preview death sound";
 
         public Visibility ChooseCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
 
@@ -500,8 +513,155 @@ namespace Voidstrap.UI.ViewModels.Settings
                 });
         }
 
+        public void StopDeathSoundPreviewIfAny()
+        {
+            if (!_isDeathSoundPreviewPlaying && _deathSoundPreviewOut is null)
+                return;
+            StopDeathSoundPreviewInternal();
+        }
+
+        private void StopDeathSoundPreviewInternal()
+        {
+            try
+            {
+                if (_deathSoundPreviewOut != null)
+                {
+                    _deathSoundPreviewOut.PlaybackStopped -= OnDeathSoundPreviewStopped;
+                    _deathSoundPreviewOut.Stop();
+                    _deathSoundPreviewOut.Dispose();
+                    _deathSoundPreviewOut = null;
+                }
+            }
+            catch
+            {
+                /* ignore */
+            }
+
+            try
+            {
+                _deathSoundPreviewReader?.Dispose();
+            }
+            catch
+            {
+                /* ignore */
+            }
+
+            _deathSoundPreviewReader = null;
+            if (!_isDeathSoundPreviewPlaying)
+                return;
+            _isDeathSoundPreviewPlaying = false;
+            OnPropertyChanged(nameof(IsDeathSoundPreviewPlaying));
+            OnPropertyChanged(nameof(DeathSoundPreviewButtonLabel));
+        }
+
+        private void OnDeathSoundPreviewStopped(object? sender, StoppedEventArgs e)
+        {
+            void Finish()
+            {
+                try
+                {
+                    if (_deathSoundPreviewOut != null)
+                    {
+                        _deathSoundPreviewOut.PlaybackStopped -= OnDeathSoundPreviewStopped;
+                        _deathSoundPreviewOut.Dispose();
+                    }
+                }
+                catch
+                {
+                    /* ignore */
+                }
+
+                _deathSoundPreviewOut = null;
+                try
+                {
+                    _deathSoundPreviewReader?.Dispose();
+                }
+                catch
+                {
+                    /* ignore */
+                }
+
+                _deathSoundPreviewReader = null;
+                _isDeathSoundPreviewPlaying = false;
+                OnPropertyChanged(nameof(IsDeathSoundPreviewPlaying));
+                OnPropertyChanged(nameof(DeathSoundPreviewButtonLabel));
+            }
+
+            if (System.Windows.Application.Current?.Dispatcher.CheckAccess() == true)
+                Finish();
+            else
+                System.Windows.Application.Current?.Dispatcher.BeginInvoke(Finish);
+        }
+
+        private void ToggleDeathSoundPreview()
+        {
+            if (_isDeathSoundPreviewPlaying)
+            {
+                StopDeathSoundPreviewInternal();
+                return;
+            }
+
+            string oofPath = Path.Combine(Paths.Mods, "Content", "sounds", "oof.ogg");
+            if (!File.Exists(oofPath))
+            {
+                Frontend.ShowMessageBox("Install a custom death sound first (Choose Sound…).", MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                StopDeathSoundPreviewInternal();
+                _deathSoundPreviewReader = new AudioFileReader(oofPath);
+                _deathSoundPreviewOut = new WaveOutEvent();
+                _deathSoundPreviewOut.Init(_deathSoundPreviewReader);
+                _deathSoundPreviewOut.PlaybackStopped += OnDeathSoundPreviewStopped;
+                _deathSoundPreviewOut.Play();
+                _isDeathSoundPreviewPlaying = true;
+                OnPropertyChanged(nameof(IsDeathSoundPreviewPlaying));
+                OnPropertyChanged(nameof(DeathSoundPreviewButtonLabel));
+            }
+            catch (Exception ex)
+            {
+                StopDeathSoundPreviewInternal();
+                Frontend.ShowMessageBox($"Could not preview the sound:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void OpenDeathSoundsFolder()
+        {
+            try
+            {
+                string dir = Path.Combine(Paths.Mods, "Content", "sounds");
+                Directory.CreateDirectory(dir);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = dir,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not open folder:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void CopyModsFolderPath()
+        {
+            try
+            {
+                System.Windows.Clipboard.SetText(Paths.Mods);
+                Frontend.ShowMessageBox("Mods folder path copied to the clipboard.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not copy:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
         public void AddCustomDeathSound()
         {
+            StopDeathSoundPreviewIfAny();
             const string filter =
                 "All supported audio|*.ogg;*.oga;*.wav;*.wave;*.mp3;*.flac;*.m4a;*.aac;*.wma;*.aiff;*.aif;*.opus|" +
                 "OGG (*.ogg;*.oga)|*.ogg;*.oga|" +
@@ -539,6 +699,7 @@ namespace Voidstrap.UI.ViewModels.Settings
 
         public void RemoveCustomDeathSound()
         {
+            StopDeathSoundPreviewIfAny();
             RemoveCustomFile(
                 new[] { "oof.ogg" },
                 Path.Combine(Paths.Mods, "Content", "sounds"),

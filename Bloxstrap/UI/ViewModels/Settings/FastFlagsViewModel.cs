@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using DiscordRPC.Logging;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using Voidstrap.Enums.FlagPresets;
@@ -49,6 +51,10 @@ namespace Voidstrap.UI.ViewModels.Settings
         private void OpenFastFlagEditor() => OpenFlagEditorEvent?.Invoke(this, EventArgs.Empty);
 
         public ICommand OpenFastFlagEditorCommand => new RelayCommand(OpenFastFlagEditor);
+
+        public ICommand ExportFastFlagsJsonToClipboardCommand => new RelayCommand(ExportFastFlagsJsonToClipboard);
+
+        public ICommand ExportFastFlagsJsonToFileCommand => new RelayCommand(ExportFastFlagsJsonToFile);
 
         public const string Enabled = "True";
         public const string Disabled = "False";
@@ -1415,6 +1421,59 @@ namespace Voidstrap.UI.ViewModels.Settings
             }
         }
 
+        private static void ExportFastFlagsJsonToClipboard()
+        {
+            try
+            {
+                if (App.FastFlags?.Prop is not { Count: > 0 })
+                {
+                    Frontend.ShowMessageBox("No FastFlags are set to export.", MessageBoxImage.Information);
+                    return;
+                }
+
+                string json = JsonSerializer.Serialize(
+                    App.FastFlags.Prop,
+                    new JsonSerializerOptions { WriteIndented = true });
+                System.Windows.Clipboard.SetText(json);
+                Frontend.ShowMessageBox("FastFlags JSON copied to the clipboard.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not copy FastFlags:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void ExportFastFlagsJsonToFile()
+        {
+            try
+            {
+                if (App.FastFlags?.Prop is not { Count: > 0 })
+                {
+                    Frontend.ShowMessageBox("No FastFlags are set to export.", MessageBoxImage.Information);
+                    return;
+                }
+
+                var dlg = new SaveFileDialog
+                {
+                    Filter = "JSON (*.json)|*.json|All files (*.*)|*.*",
+                    DefaultExt = ".json",
+                    FileName = "voidstrap-fastflags.json"
+                };
+
+                if (dlg.ShowDialog() != true)
+                    return;
+
+                string json = JsonSerializer.Serialize(
+                    App.FastFlags.Prop,
+                    new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(dlg.FileName, json);
+                Frontend.ShowMessageBox("FastFlags saved.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not save file:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
 
         // INotifyPropertyChanged implementation
         public new event PropertyChangedEventHandler? PropertyChanged;

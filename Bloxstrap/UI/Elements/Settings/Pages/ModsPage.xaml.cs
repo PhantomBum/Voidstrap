@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
@@ -38,6 +38,12 @@ namespace Voidstrap.UI.Elements.Settings.Pages
 
             ViewModel = new ModsViewModel();
             DataContext = ViewModel;
+
+            Unloaded += (_, _) =>
+            {
+                if (DataContext is ModsViewModel vm)
+                    vm.StopDeathSoundPreviewIfAny();
+            };
 
             Loaded += async (s, e) =>
             {

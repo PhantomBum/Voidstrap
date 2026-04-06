@@ -1,4 +1,4 @@
-﻿<ui:UiPage
+<ui:UiPage
     x:Class="Voidstrap.UI.Elements.Settings.Pages.FastFlagsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -76,6 +76,33 @@
         <controls:OptionControl Header="{x:Static resources:Strings.Menu_FastFlags_Reset_Title}">
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />
         </controls:OptionControl>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Backup &amp; export" />
+                    <TextBlock
+                        Margin="0,2,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="Export your current FastFlags as JSON for backup or sharing." />
+                </StackPanel>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <ui:Button
+                        Margin="0,0,8,8"
+                        Command="{Binding ExportFastFlagsJsonToClipboardCommand}"
+                        Content="Copy JSON to clipboard"
+                        Icon="Clipboard16" />
+                    <ui:Button
+                        Margin="0,0,8,8"
+                        Command="{Binding ExportFastFlagsJsonToFileCommand}"
+                        Content="Save JSON to file…"
+                        Icon="Save24" />
+                </WrapPanel>
+            </StackPanel>
+        </ui:CardExpander>
 
         <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
             <ui:CardExpander.Header>

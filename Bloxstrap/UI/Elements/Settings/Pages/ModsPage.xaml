@@ -422,19 +422,41 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                     <!--  Custom Death Sound Option  -->
                     <controls:OptionControl
                         Header="Custom Death Sound"
-                        Description="Replaces the death (oof) sound. OGG files are installed as-is; WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, and Opus are converted automatically to OGG Vorbis (mono, 44.1 kHz, up to 2 minutes).">
+                        Description="Replaces the death (oof) sound. OGG files are installed as-is; WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, and Opus are converted automatically to OGG Vorbis (mono, 44.1 kHz, up to 2 minutes). Preview plays your installed oof.ogg locally.">
                         <StackPanel>
-                            <ui:Button
-                    Command="{Binding AddCustomDeathSoundCommand}"
-                    Content="Choose Sound..."
-                    Icon="DocumentAdd16"
-                    Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
-                            <ui:Button
-                    Appearance="Danger"
-                    Command="{Binding RemoveCustomDeathSoundCommand}"
-                    Content="Remove Custom Death Sound"
-                    Icon="Delete16"
-                    Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
+                            <WrapPanel Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding AddCustomDeathSoundCommand}"
+                                    Content="Choose Sound..."
+                                    Icon="DocumentAdd16"
+                                    Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Appearance="Danger"
+                                    Command="{Binding RemoveCustomDeathSoundCommand}"
+                                    Content="Remove Custom Death Sound"
+                                    Icon="Delete16"
+                                    Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding ToggleDeathSoundPreviewCommand}"
+                                    Content="{Binding DeathSoundPreviewButtonLabel}"
+                                    Icon="Play24"
+                                    Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
+                            </WrapPanel>
+                            <WrapPanel Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding OpenDeathSoundsFolderCommand}"
+                                    Content="Open sounds folder"
+                                    Icon="Folder24" />
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding CopyModsFolderPathCommand}"
+                                    Content="Copy mods folder path"
+                                    Icon="Clipboard16" />
+                            </WrapPanel>
                         </StackPanel>
                     </controls:OptionControl>
 

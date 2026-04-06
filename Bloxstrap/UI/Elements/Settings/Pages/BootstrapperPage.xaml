@@ -1,4 +1,4 @@
-﻿<ui:UiPage
+<ui:UiPage
     x:Class="Voidstrap.UI.Elements.Settings.Pages.BehaviourPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -34,6 +34,52 @@
                     IsOpen="True"
                     Message="Features here are highly customizable but intended for advanced users."
                     Severity="Informational" />
+
+                    <ui:CardExpander Margin="0,8,0,8" IsExpanded="False">
+                        <ui:CardExpander.Header>
+                            <StackPanel>
+                                <TextBlock FontSize="14" Text="Paths &amp; quick actions" />
+                                <TextBlock
+                                    Margin="0,2,0,0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    Text="Open Voidstrap or Roblox install folders, or copy paths for troubleshooting and support." />
+                            </StackPanel>
+                        </ui:CardExpander.Header>
+                        <StackPanel>
+                            <WrapPanel Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding OpenVoidstrapDataFolderCommand}"
+                                    Content="Open Voidstrap data folder"
+                                    Icon="Folder24" />
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding CopyVoidstrapDataPathCommand}"
+                                    Content="Copy data path"
+                                    Icon="Clipboard16" />
+                            </WrapPanel>
+                            <WrapPanel Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding OpenRobloxInstallFolderCommand}"
+                                    Content="Open Roblox player folder"
+                                    Icon="Folder24" />
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding CopyRobloxClientPathCommand}"
+                                    Content="Copy client path"
+                                    Icon="Clipboard16" />
+                            </WrapPanel>
+                            <WrapPanel Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,8"
+                                    Command="{Binding OpenVoidstrapLogsFolderCommand}"
+                                    Content="Open Voidstrap logs folder"
+                                    Icon="DocumentBulletList24" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </ui:CardExpander>
 
                     <controls:OptionControl 
                     x:Name="ConfirmLaunchOption"

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Input;
+using Voidstrap;
 using Voidstrap.AppData;
 using Voidstrap.RobloxInterfaces;
 using static VoidstrapRobloxSettingsManager;
@@ -355,6 +358,121 @@ namespace Voidstrap.UI.ViewModels.Settings
                     UpdateCleanerItems();
                 }
                 OnPropertyChanged(nameof(CleanerVoidstrap));
+            }
+        }
+
+        public ICommand OpenVoidstrapDataFolderCommand => new RelayCommand(OpenVoidstrapDataFolder);
+        public ICommand CopyVoidstrapDataPathCommand => new RelayCommand(CopyVoidstrapDataPath);
+        public ICommand OpenRobloxInstallFolderCommand => new RelayCommand(OpenRobloxInstallFolder);
+        public ICommand CopyRobloxClientPathCommand => new RelayCommand(CopyRobloxClientPath);
+        public ICommand OpenVoidstrapLogsFolderCommand => new RelayCommand(OpenVoidstrapLogsFolder);
+
+        private static void OpenVoidstrapDataFolder()
+        {
+            if (!Paths.Initialized)
+            {
+                Frontend.ShowMessageBox("Voidstrap data paths are not ready yet.", MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = Paths.Base,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not open folder:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void CopyVoidstrapDataPath()
+        {
+            if (!Paths.Initialized)
+            {
+                Frontend.ShowMessageBox("Voidstrap data paths are not ready yet.", MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                Clipboard.SetText(Paths.Base);
+                Frontend.ShowMessageBox("Voidstrap data path copied to the clipboard.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not copy:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void OpenRobloxInstallFolder()
+        {
+            string path = App.Settings.Prop.ClientPath;
+            if (string.IsNullOrWhiteSpace(path))
+                path = Path.Combine(Paths.Base, "Roblox", "Player");
+
+            string? dir = Directory.Exists(path) ? path : Path.GetDirectoryName(path);
+            if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
+            {
+                Frontend.ShowMessageBox(
+                    "Roblox player folder was not found yet. Launch Roblox once or check your client path in settings.",
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = dir,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not open folder:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void CopyRobloxClientPath()
+        {
+            try
+            {
+                Clipboard.SetText(App.Settings.Prop.ClientPath);
+                Frontend.ShowMessageBox("Roblox client path copied to the clipboard.", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not copy:\n{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private static void OpenVoidstrapLogsFolder()
+        {
+            if (!Paths.Initialized)
+            {
+                Frontend.ShowMessageBox("Voidstrap data paths are not ready yet.", MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Paths.Logs);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = Paths.Logs,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Could not open logs folder:\n{ex.Message}", MessageBoxImage.Error);
             }
         }
 
