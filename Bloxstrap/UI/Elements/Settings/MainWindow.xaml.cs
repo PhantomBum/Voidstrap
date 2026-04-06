@@ -1,4 +1,4 @@
-﻿using DiscordRPC;
+using DiscordRPC;
 using DiscordRPC.Logging;
 using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.Web.WebView2.Core;
@@ -67,6 +67,7 @@ namespace Voidstrap.UI.Elements.Settings
         typeof(ReleasesPage),
         typeof(DonoPage),
         typeof(ServerBrowserPage),
+        typeof(SuitePage),
         };
 
         public MainWindow(bool showAlreadyRunningWarning)

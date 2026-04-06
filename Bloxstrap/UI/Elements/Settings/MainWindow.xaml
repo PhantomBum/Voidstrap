@@ -1,4 +1,4 @@
-﻿<base:WpfUiWindow
+<base:WpfUiWindow
     x:Class="Voidstrap.UI.Elements.Settings.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -314,6 +314,7 @@
                     <ui:NavigationItem Content="Browser" Icon="Server20" Tag="ServerPlay20" PageType="{x:Type pages:ServerBrowserPage}" />
                     <ui:NavigationSeparator />
                     <ui:NavigationItem Content="Configuration" IsEnabled="False" Opacity="0.6" />
+                    <ui:NavigationItem Content="Suite 2.0" Icon="BoxMultiple24" Tag="Box24" PageType="{x:Type pages:SuitePage}" />
                     <ui:NavigationItem Content="FastFlag Settings" Icon="Settings28" Tag="SettingsChat24" PageType="{x:Type pages:FastFlagsPage}" />
                     <ui:NavigationItem x:Name="FastFlagEditorNavItem" Content="FastFlag Editor" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagEditorPage}" Visibility="{Binding IsFastFlagEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <ui:NavigationItem Content="Global" Icon="GlobeLocation20" Tag="Globe20" PageType="{x:Type pages:GBSEditorPage}" />
