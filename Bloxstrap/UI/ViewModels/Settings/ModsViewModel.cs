@@ -3,6 +3,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 using NAudio.Gui;
 using NAudio.Midi;
+using NAudio.Vorbis;
 using NAudio.Wave;
 using System;
 using System.Collections.ObjectModel;
@@ -207,7 +208,7 @@ namespace Voidstrap.UI.ViewModels.Settings
         public ICommand CopyModsFolderPathCommand => new RelayCommand(CopyModsFolderPath);
 
         private WaveOutEvent? _deathSoundPreviewOut;
-        private AudioFileReader? _deathSoundPreviewReader;
+        private WaveStream? _deathSoundPreviewReader;
         private bool _isDeathSoundPreviewPlaying;
 
         public bool IsDeathSoundPreviewPlaying => _isDeathSoundPreviewPlaying;
@@ -611,7 +612,7 @@ namespace Voidstrap.UI.ViewModels.Settings
             try
             {
                 StopDeathSoundPreviewInternal();
-                _deathSoundPreviewReader = new AudioFileReader(oofPath);
+                _deathSoundPreviewReader = CreateDeathSoundPreviewReader(oofPath);
                 _deathSoundPreviewOut = new WaveOutEvent();
                 _deathSoundPreviewOut.Init(_deathSoundPreviewReader);
                 _deathSoundPreviewOut.PlaybackStopped += OnDeathSoundPreviewStopped;
@@ -623,8 +624,35 @@ namespace Voidstrap.UI.ViewModels.Settings
             catch (Exception ex)
             {
                 StopDeathSoundPreviewInternal();
-                Frontend.ShowMessageBox($"Could not preview the sound:\n{ex.Message}", MessageBoxImage.Error);
+                Frontend.ShowMessageBox(
+                    $"Could not preview the sound:\n{ex.Message}\n\n" +
+                    "Tip: oof.ogg should be Ogg Vorbis. Re-import your file or convert it to Vorbis OGG.",
+                    MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// OGG Vorbis uses NVorbis. <see cref="AudioFileReader"/> relies on Media Foundation and often fails on .ogg (0xC00D36C4).
+        /// </summary>
+        private static WaveStream CreateDeathSoundPreviewReader(string path)
+        {
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+
+            if (ext is ".ogg" or ".oga")
+            {
+                try
+                {
+                    return new VorbisWaveReader(path);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        "This file is not Ogg Vorbis (for example it may be Opus-in-Ogg). Re-import a supported format so Voidstrap can convert it.",
+                        ex);
+                }
+            }
+
+            return new AudioFileReader(path);
         }
 
         private static void OpenDeathSoundsFolder()

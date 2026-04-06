@@ -419,23 +419,39 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                         </StackPanel>
                     </controls:OptionControl>
 
-                    <!--  Custom Death Sound Option  -->
-                    <controls:OptionControl
-                        Header="Custom Death Sound"
-                        Description="Replaces the death (oof) sound. OGG files are installed as-is; WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, and Opus are converted automatically to OGG Vorbis (mono, 44.1 kHz, up to 2 minutes). Preview plays your installed oof.ogg locally.">
-                        <StackPanel>
+                    <!--  Death sound (oof) — grouped card  -->
+                    <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
+                        <ui:CardExpander.Header>
+                            <StackPanel>
+                                <TextBlock FontSize="15" FontWeight="SemiBold" Text="Death sound (oof)" />
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    TextWrapping="Wrap">
+                                    Replaces Roblox's death sound. OGG Vorbis is installed as-is; other formats (WAV, MP3, FLAC, M4A, AAC, WMA, AIFF, Opus) are converted to Vorbis oof.ogg. Preview decodes OGG with NVorbis (not Windows Media), so it matches what the game loads.
+                                </TextBlock>
+                            </StackPanel>
+                        </ui:CardExpander.Header>
+                        <StackPanel Margin="0,4,0,8">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Sound file" />
                             <WrapPanel Orientation="Horizontal">
                                 <ui:Button
                                     Margin="0,0,8,8"
                                     Command="{Binding AddCustomDeathSoundCommand}"
-                                    Content="Choose Sound..."
+                                    Content="Choose sound…"
                                     Icon="DocumentAdd16"
                                     Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
                                 <ui:Button
                                     Margin="0,0,8,8"
                                     Appearance="Danger"
                                     Command="{Binding RemoveCustomDeathSoundCommand}"
-                                    Content="Remove Custom Death Sound"
+                                    Content="Remove oof.ogg"
                                     Icon="Delete16"
                                     Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
                                 <ui:Button
@@ -445,6 +461,13 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     Icon="Play24"
                                     Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
                             </WrapPanel>
+
+                            <TextBlock
+                                Margin="0,8,0,6"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Folders &amp; sharing" />
                             <WrapPanel Orientation="Horizontal">
                                 <ui:Button
                                     Margin="0,0,8,8"
@@ -458,7 +481,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     Icon="Clipboard16" />
                             </WrapPanel>
                         </StackPanel>
-                    </controls:OptionControl>
+                    </ui:CardExpander>
 
                     <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">
                         <ui:CardExpander.Header>
